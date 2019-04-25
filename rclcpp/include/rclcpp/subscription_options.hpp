@@ -38,7 +38,8 @@ struct SubscriptionOptionsWithAllocator
   /// Optional custom allocator.
   std::shared_ptr<Allocator> allocator = nullptr;
   /// Setting to explicitly set intraprocess communications.
-  IntraProcessSetting use_intra_process_comm = IntraProcessSetting::NodeDefault;
+  IntraProcessSetting use_intra_process_comm = IntraProcessSetting::Enable;
+  bool only_intra = true;
 };
 
 using SubscriptionOptions = SubscriptionOptionsWithAllocator<std::allocator<void>>;
