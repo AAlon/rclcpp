@@ -119,6 +119,7 @@ public:
     }
   }
 
+  [[deprecated("use publish(*msg)")]]
   virtual void
   publish(const std::shared_ptr<const MessageT> & msg)
   {
@@ -164,6 +165,7 @@ public:
     }
   }
 
+  [[deprecated("use publish(*msg)")]]
   void
   publish(std::shared_ptr<const rcl_serialized_message_t> serialized_msg)
   {
