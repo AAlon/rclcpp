@@ -88,11 +88,10 @@ public:
    * \param[in] msg A shared pointer to the message to send.
    */
   virtual void
-  publish(std::unique_ptr<MessageT, MessageDeleter> & msg)
+  publish(std::unique_ptr<MessageT, MessageDeleter> msg)
   {
     if (!intra_process_is_enabled_) {
       this->do_inter_process_publish(msg.get());
-      msg.reset();
       return;
     }
     // If an interprocess subscription exist, then the unique_ptr is promoted
@@ -141,7 +140,7 @@ public:
     auto ptr = MessageAllocTraits::allocate(*message_allocator_.get(), 1);
     MessageAllocTraits::construct(*message_allocator_.get(), ptr, msg);
     MessageUniquePtr unique_msg(ptr, message_deleter_);
-    this->publish(unique_msg);
+    this->publish(std::move(unique_msg));
   }
 
   virtual void
