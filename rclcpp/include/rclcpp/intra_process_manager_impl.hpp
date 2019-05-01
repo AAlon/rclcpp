@@ -19,6 +19,7 @@
 #include <array>
 #include <atomic>
 #include <cstring>
+#include <string.h>
 #include <functional>
 #include <limits>
 #include <map>
@@ -284,7 +285,8 @@ private:
   fixed_size_string(const char * str) const
   {
     FixedSizeString ret;
-    size_t size = std::strlen(str) + 1;
+    fprintf(stderr, "FixedSizeString: %s\n", str);
+    size_t size = strnlen(str, 256) + 1;
     if (size > ret.size()) {
       throw std::runtime_error("failed to copy topic name");
     }

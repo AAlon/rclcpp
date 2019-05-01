@@ -205,6 +205,8 @@ public:
 
   bool add_handles_to_wait_set(rcl_wait_set_t * wait_set)
   {
+    bool intra_only = true;
+    if (!intra_only) {
     for (auto subscription : subscription_handles_) {
       if (rcl_wait_set_add_subscription(wait_set, subscription.get(), NULL) != RCL_RET_OK) {
         RCUTILS_LOG_ERROR_NAMED(
@@ -213,7 +215,7 @@ public:
         return false;
       }
     }
-
+    }
     for (auto client : client_handles_) {
       if (rcl_wait_set_add_client(wait_set, client.get(), NULL) != RCL_RET_OK) {
         RCUTILS_LOG_ERROR_NAMED(
@@ -272,7 +274,7 @@ public:
       auto subscription = get_subscription_by_handle(*it, weak_nodes);
       if (subscription) {
         // Figure out if this is for intra-process or not.
-        bool is_intra_process = false;
+        bool is_intra_process = true;
         if (subscription->get_intra_process_subscription_handle()) {
           is_intra_process = subscription->get_intra_process_subscription_handle() == *it;
         }

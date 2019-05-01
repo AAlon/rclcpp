@@ -284,7 +284,7 @@ private:
 
   bool use_global_arguments_ {true};
 
-  bool use_intra_process_comms_ {false};
+  bool use_intra_process_comms_ {true};
 
   bool start_parameter_services_ {true};
 

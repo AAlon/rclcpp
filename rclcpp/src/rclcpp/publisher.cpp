@@ -22,6 +22,8 @@
 #include <mutex>
 #include <sstream>
 #include <string>
+#include <ctime>    // For time()
+#include <cstdlib>
 
 #include "rcl_interfaces/msg/intra_process_message.hpp"
 #include "rcutils/logging_macros.h"
@@ -43,7 +45,7 @@ PublisherBase::PublisherBase(
   const rosidl_message_type_support_t & type_support,
   const rcl_publisher_options_t & publisher_options)
 : rcl_node_handle_(node_base->get_shared_rcl_node_handle()),
-  intra_process_is_enabled_(false), intra_process_publisher_id_(0)
+  intra_process_is_enabled_(true), intra_process_publisher_id_(0)
 {
   rcl_ret_t ret = rcl_publisher_init(
     &publisher_handle_,
@@ -65,16 +67,19 @@ PublisherBase::PublisherBase(
     rclcpp::exceptions::throw_from_rcl_error(ret, "could not create publisher");
   }
   // Life time of this object is tied to the publisher handle.
-  rmw_publisher_t * publisher_rmw_handle = rcl_publisher_get_rmw_handle(&publisher_handle_);
-  if (!publisher_rmw_handle) {
-    auto msg = std::string("failed to get rmw handle: ") + rcl_get_error_string().str;
-    rcl_reset_error();
-    throw std::runtime_error(msg);
-  }
-  if (rmw_get_gid_for_publisher(publisher_rmw_handle, &rmw_gid_) != RMW_RET_OK) {
-    auto msg = std::string("failed to get publisher gid: ") + rmw_get_error_string().str;
-    rmw_reset_error();
-    throw std::runtime_error(msg);
+  bool intra_only = true;
+  if (!intra_only) {
+      rmw_publisher_t *publisher_rmw_handle = rcl_publisher_get_rmw_handle(&publisher_handle_);
+      if (!publisher_rmw_handle) {
+          auto msg = std::string("failed to get rmw handle: ") + rcl_get_error_string().str;
+          rcl_reset_error();
+          throw std::runtime_error(msg);
+      }
+      if (rmw_get_gid_for_publisher(publisher_rmw_handle, &rmw_gid_) != RMW_RET_OK) {
+          auto msg = std::string("failed to get publisher gid: ") + rmw_get_error_string().str;
+          rmw_reset_error();
+          throw std::runtime_error(msg);
+      }
   }
 }
 
@@ -156,6 +161,10 @@ PublisherBase::get_publisher_handle() const
 size_t
 PublisherBase::get_subscription_count() const
 {
+    bool intra_only = true;
+    if (intra_only) {
+        return get_intra_process_subscription_count();
+    }
   size_t inter_process_subscription_count = 0;
 
   rcl_ret_t status = rcl_publisher_get_subscription_count(
@@ -284,6 +293,8 @@ PublisherBase::setup_intra_process(
   intra_process_is_enabled_ = true;
 
   // Life time of this object is tied to the publisher handle.
+#ifndef INTRA_ONLY
+    fprintf(stderr, "Getting gid from rmw\n");
   rmw_publisher_t * publisher_rmw_handle = rcl_publisher_get_rmw_handle(
     &intra_process_publisher_handle_);
   if (publisher_rmw_handle == nullptr) {
@@ -299,4 +310,13 @@ PublisherBase::setup_intra_process(
     rmw_reset_error();
     throw std::runtime_error(msg);
   }
+#else
+    fprintf(stderr, "Randomly generating gid\n");
+    srand(time(0));  // Initialize random number generator.
+    int rand_num = (rand() % 100) + 1;
+    intra_process_rmw_gid_.implementation_identifier = "rmw_fastrtps_cpp";
+
+  memset(intra_process_rmw_gid_.data, 0, RMW_GID_STORAGE_SIZE);
+  memcpy(intra_process_rmw_gid_.data, std::to_string(rand_num).c_str(), 4);
+#endif
 }

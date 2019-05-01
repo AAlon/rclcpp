@@ -109,7 +109,7 @@ public:
     }
     uint64_t message_seq =
       store_intra_process_message(intra_process_publisher_id_, msg);
-    this->do_intra_process_publish(message_seq);
+    //this->do_intra_process_publish(message_seq);
   }
 
   virtual void
@@ -135,7 +135,7 @@ public:
     if (intra_process_is_enabled_) {
       uint64_t message_seq =
         store_intra_process_message(intra_process_publisher_id_, msg);
-      this->do_intra_process_publish(message_seq);
+      //this->do_intra_process_publish(message_seq);
     }
     if (get_subscription_count() > get_intra_process_subscription_count()) {
       this->do_inter_process_publish(msg.get());
@@ -218,7 +218,7 @@ protected:
     rcl_interfaces::msg::IntraProcessMessage ipm;
     ipm.publisher_id = intra_process_publisher_id_;
     ipm.message_sequence = message_seq;
-    auto status = rcl_publish(&intra_process_publisher_handle_, &ipm);
+    auto status = RCL_RET_OK; //rcl_publish(&intra_process_publisher_handle_, &ipm);
     if (RCL_RET_PUBLISHER_INVALID == status) {
       rcl_reset_error();  // next call will reset error message if not context
       if (rcl_publisher_is_valid_except_context(&intra_process_publisher_handle_)) {

@@ -35,7 +35,7 @@ SubscriptionBase::SubscriptionBase(
   const rcl_subscription_options_t & subscription_options,
   bool is_serialized)
 : node_handle_(node_handle),
-  use_intra_process_(false),
+  use_intra_process_(true),
   intra_process_subscription_id_(0),
   type_support_(type_support_handle),
   is_serialized_(is_serialized)

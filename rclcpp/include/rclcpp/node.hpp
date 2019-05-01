@@ -179,7 +179,7 @@ public:
     const std::string & topic_name,
     size_t qos_history_depth,
     std::shared_ptr<Alloc> allocator,
-    IntraProcessSetting use_intra_process_comm = IntraProcessSetting::NodeDefault);
+    IntraProcessSetting use_intra_process_comm = IntraProcessSetting::Enable);
 
   /// Create and return a Publisher.
   /**
@@ -196,7 +196,7 @@ public:
     const std::string & topic_name,
     const rmw_qos_profile_t & qos_profile = rmw_qos_profile_default,
     std::shared_ptr<Alloc> allocator = nullptr,
-    IntraProcessSetting use_intra_process_comm = IntraProcessSetting::NodeDefault);
+    IntraProcessSetting use_intra_process_comm = IntraProcessSetting::Enable);
 
   /// Create and return a Subscription.
   /**
@@ -261,7 +261,7 @@ public:
       typename rclcpp::subscription_traits::has_message_type<CallbackT>::type, Alloc>::SharedPtr
     msg_mem_strat = nullptr,
     std::shared_ptr<Alloc> allocator = nullptr,
-    IntraProcessSetting use_intra_process_comm = IntraProcessSetting::NodeDefault);
+    IntraProcessSetting use_intra_process_comm = IntraProcessSetting::Enable);
 
   /// Create and return a Subscription.
   /**
@@ -298,7 +298,7 @@ public:
       typename rclcpp::subscription_traits::has_message_type<CallbackT>::type, Alloc>::SharedPtr
     msg_mem_strat = nullptr,
     std::shared_ptr<Alloc> allocator = nullptr,
-    IntraProcessSetting use_intra_process_comm = IntraProcessSetting::NodeDefault);
+    IntraProcessSetting use_intra_process_comm = IntraProcessSetting::Enable);
 
   /// Create a timer.
   /**
